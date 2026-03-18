@@ -1,85 +1,183 @@
-Adaptive FIR Audio Enhancement using Hamming and Blackman Windows
-Overview
+# Adaptive Multi-Stage FIR Speech Enhancement using Hamming and Blackman Windows
 
-This project presents the design and analysis of a multi-stage FIR filtering framework for audio signal enhancement and noise suppression. The system employs classical window-based FIR filter design techniques, where Hamming and Blackman windows are applied adaptively to improve spectral performance.
+## Project Overview
 
-The processing pipeline progressively enhances speech quality through successive filtering stages including notch filtering, band-pass filtering, and equalization.
+This project presents the design and implementation of a **multi-stage adaptive FIR filtering framework** for speech enhancement and noise suppression in audio signals. The system dynamically selects between **Hamming and Blackman window-based FIR filters** to achieve an effective trade-off between stopband attenuation, transition sharpness, and signal preservation.
 
-📄 Detailed methodology, analysis, and performance plots are available in the project report:
-adaptive_fir_audio_enhancement_report.pdf
+The processing pipeline consists of **localized spectral interference detection, adaptive notch filtering, speech band-pass filtering, equalization, and amplitude compensation**, resulting in progressive improvement in signal quality.
 
-Objectives
+The implementation is carried out in MATLAB using window-method FIR design and periodogram-based spectral estimation.
 
-Analyze clean and noisy audio signals in time and frequency domains
+---
 
-Design FIR filters using windowing techniques
+## System Workflow
 
-Implement adaptive window selection for improved noise suppression
+### 1. Signal Acquisition and Pre-Processing
 
-Enhance speech clarity through multi-stage filtering
+- Audio signal loaded using `audioread`
+- Stereo signals converted to mono via channel averaging
+- Signal duration and time vector computed for visualization
+- Time-domain waveform and power spectral density estimated using **periodogram**
 
-Evaluate performance using spectral comparison
+### Noise Injection
 
-Methodology
+To simulate real acoustic degradation:
 
-The signal processing framework consists of the following stages:
+- Additive white Gaussian noise introduced  
+- Noise scaling factor: **0.1**
+- Noisy signal playback and visualization performed
 
-Signal Analysis
+---
 
-The original and noisy audio signals are examined in both time domain and frequency domain to identify dominant noise components and useful speech bandwidth.
+## 2. Adaptive Notch Filtering
 
-FIR Notch Filter
+### Chunk-Based Spectral Analysis
 
-A window-based FIR notch filter is designed to suppress narrowband interference and tonal noise components.
+The noisy signal is divided into:
 
-FIR Band-Pass Filter
+- **Number of chunks:** 10  
+- Each chunk processed independently to track time-varying interference
 
-A band-pass FIR filter is implemented to retain primary speech frequency components while attenuating out-of-band noise.
+For each chunk:
 
-FIR Equalizer
+1. Apply Hamming window  
+2. Estimate spectrum using periodogram  
+3. Detect dominant interference frequency using **peak power estimation**
 
-A final FIR equalizer stage is used to improve spectral balance and perceptual quality of the processed signal.
+### Notch Filter Design
 
-Adaptive Window Selection
+- **Filter Order:** 40  
+- **Bandwidth:** 30 Hz  
+- Ideal band-stop impulse response derived using sinc formulation
+- Linear-phase FIR design using window method
 
-Blackman Window → Higher stopband attenuation and improved sidelobe suppression
+Two filters are generated:
 
-Hamming Window → Narrower transition band and better signal preservation
+- Hamming window FIR notch filter  
+- Blackman window FIR notch filter  
 
-Adaptive selection enables an effective trade-off between noise suppression and signal distortion.
+### Adaptive Window Selection Logic
 
-Tools and Technologies
+Filtering decision is based on:
 
-MATLAB
+> Variance comparison of filtered chunk outputs.
 
-Digital Signal Processing (DSP)
+- Lower variance interpreted as improved noise suppression
+- Corresponding filter output selected and merged into final signal
 
-FIR Filter Design
+This mechanism enables adaptive control of:
 
-Window Functions (Hamming and Blackman)
+- Sidelobe suppression  
+- Transition region sharpness  
+- Residual noise energy  
 
-Time–Frequency Analysis
+---
 
-Results
+## 3. Speech Band-Pass Enhancement
 
-The proposed filtering framework demonstrates:
+After interference suppression, a band-pass FIR filter enhances speech components.
 
-Reduction of broadband and tonal noise components
+- **Passband:** 50 Hz – 1000 Hz  
+- **Filter Order:** 40  
+- Window: Hamming  
 
-Improvement in speech intelligibility
+Design approach:
 
-Smoother spectral response after equalization
+- Ideal band-pass impulse response using sinc difference formulation
+- Window multiplication for ripple control
+- Output normalization to prevent amplitude scaling artifacts
 
-Progressive signal enhancement across filtering stages
+This stage reduces:
 
-Frequency-domain comparison plots in the report show clear reduction in noise power after each stage of filtering.
+- Low-frequency hum  
+- High-frequency broadband noise  
 
-Repository Status
+---
 
-⚠️ MATLAB implementation files will be uploaded in a future update.
-Currently, the repository contains the complete project report including design methodology, analysis, and results.
+## 4. Equalization Stage
 
-Author
+A final FIR equalizer improves spectral balance and perceptual clarity.
 
-Sriti Sancharika
+- **Equalization Band:** 40 Hz – 1500 Hz  
+- **Filter Order:** 40  
+- Window-based FIR implementation
+
+This stage compensates for:
+
+- Passband attenuation introduced by earlier filtering  
+- Residual spectral unevenness  
+
+---
+
+## 5. Gain Compensation
+
+Filtering reduces signal amplitude due to energy removal.
+
+- Gain factor applied: **1.5**
+- Clipping prevention implemented using saturation constraint within [-1, 1]
+
+---
+
+## Performance Evaluation
+
+### Signal-to-Noise Ratio (SNR)
+
+System performance evaluated using:
+
+\[
+SNR = 10 \log_{10} \left( \frac{\sum s^2}{\sum (s - \hat{s})^2} \right)
+\]
+
+Measured at three stages:
+
+- After noise addition  
+- After adaptive notch filtering  
+- After final equalization  
+
+### Frequency Domain Comparison
+
+Periodogram-based PSD plots show:
+
+- High noise floor in corrupted signal  
+- Reduction in dominant interference peaks  
+- Progressive spectral smoothing after each filtering stage  
+
+---
+
+## Key Engineering Features
+
+- Adaptive window selection (Hamming vs Blackman)
+- Chunk-wise spectral interference tracking
+- Linear-phase FIR implementation
+- Multi-stage noise suppression architecture
+- Variance-based adaptive decision logic
+- Time-frequency visualization and analysis
+- Quantitative SNR performance measurement
+- Modular MATLAB DSP implementation
+
+---
+
+## Tools and Environment
+
+- MATLAB
+- FIR Window Design Method
+- Periodogram Spectral Estimation
+- Digital Signal Processing Toolbox
+
+---
+
+## Possible Extensions
+
+- Real-time streaming implementation
+- FPGA / fixed-point FIR architecture realization
+- LMS or RLS adaptive filtering comparison
+- Objective speech quality metrics (PESQ / STOI)
+- Filter order optimization using Kaiser window design
+- Multi-band equalization strategy
+
+---
+
+## Author
+
+Sriti Sancharika  
 VLSI | Digital Signal Processing | FPGA | Timing Analysis
