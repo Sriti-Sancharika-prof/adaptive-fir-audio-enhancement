@@ -4,9 +4,9 @@
 
 This project presents the design and implementation of a **multi-stage adaptive FIR filtering framework** for speech enhancement and noise suppression in audio signals. The system dynamically selects between **Hamming and Blackman window-based FIR filters** to achieve an effective trade-off between stopband attenuation, transition sharpness, and signal preservation.
 
-The processing pipeline consists of **localized spectral interference detection, adaptive notch filtering, speech band-pass filtering, equalization, and amplitude compensation**, resulting in progressive improvement in signal quality.
+The processing pipeline consists of **localised spectral interference detection, adaptive notch filtering, speech band-pass filtering, equalisation, and amplitude compensation**, resulting in progressive improvement in signal quality.
 
-The implementation is carried out in MATLAB using window-method FIR design and periodogram-based spectral estimation.
+The implementation is carried out in MATLAB using the window-method FIR design and periodogram-based spectral estimation.
 
 ---
 
@@ -16,7 +16,7 @@ The implementation is carried out in MATLAB using window-method FIR design and p
 
 - Audio signal loaded using `audioread`
 - Stereo signals converted to mono via channel averaging
-- Signal duration and time vector computed for visualization
+- Signal duration and time vector computed for visualisation
 - Time-domain waveform and power spectral density estimated using **periodogram**
 
 ### Noise Injection
@@ -25,7 +25,7 @@ To simulate real acoustic degradation:
 
 - Additive white Gaussian noise introduced  
 - Noise scaling factor: **0.1**
-- Noisy signal playback and visualization performed
+- Noisy signal playback and visualisation performed
 
 ---
 
@@ -36,12 +36,12 @@ To simulate real acoustic degradation:
 The noisy signal is divided into:
 
 - **Number of chunks:** 10  
-- Each chunk processed independently to track time-varying interference
+- Each chunk is processed independently to track time-varying interference
 
 For each chunk:
 
 1. Apply Hamming window  
-2. Estimate spectrum using periodogram  
+2. Estimate the spectrum using periodogram  
 3. Detect dominant interference frequency using **peak power estimation**
 
 ### Notch Filter Design
@@ -49,7 +49,7 @@ For each chunk:
 - **Filter Order:** 40  
 - **Bandwidth:** 30 Hz  
 - Ideal band-stop impulse response derived using sinc formulation
-- Linear-phase FIR design using window method
+- Linear-phase FIR design using the window method
 
 Two filters are generated:
 
@@ -63,7 +63,7 @@ Filtering decision is based on:
 > Variance comparison of filtered chunk outputs.
 
 - Lower variance interpreted as improved noise suppression
-- Corresponding filter output selected and merged into final signal
+- Corresponding filter output selected and merged into the final signal
 
 This mechanism enables adaptive control of:
 
@@ -96,7 +96,7 @@ This stage reduces:
 
 ## 4. Equalization Stage
 
-A final FIR equalizer improves spectral balance and perceptual clarity.
+A final FIR equaliser improves spectral balance and perceptual clarity.
 
 - **Equalization Band:** 40 Hz – 1500 Hz  
 - **Filter Order:** 40  
@@ -132,7 +132,7 @@ Measured at three stages:
 
 - After noise addition  
 - After adaptive notch filtering  
-- After final equalization  
+- After final equalisation  
 
 ### Frequency Domain Comparison
 
@@ -151,7 +151,7 @@ Periodogram-based PSD plots show:
 - Linear-phase FIR implementation
 - Multi-stage noise suppression architecture
 - Variance-based adaptive decision logic
-- Time-frequency visualization and analysis
+- Time-frequency visualisation and analysis
 - Quantitative SNR performance measurement
 - Modular MATLAB DSP implementation
 
@@ -169,11 +169,11 @@ Periodogram-based PSD plots show:
 ## Possible Extensions
 
 - Real-time streaming implementation
-- FPGA / fixed-point FIR architecture realization
+- FPGA / fixed-point FIR architecture realisation
 - LMS or RLS adaptive filtering comparison
 - Objective speech quality metrics (PESQ / STOI)
-- Filter order optimization using Kaiser window design
-- Multi-band equalization strategy
+- Filter order optimisation using Kaiser window design
+- Multi-band equalisation strategy
 
 ---
 
